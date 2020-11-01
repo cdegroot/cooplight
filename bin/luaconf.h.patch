@@ -1,0 +1,15 @@
+diff --git a/app/lua53/luaconf.h b/app/lua53/luaconf.h
+index ea2e4f02..4b4ae296 100644
+--- a/app/lua53/luaconf.h
++++ b/app/lua53/luaconf.h
+@@ -86,8 +86,8 @@
+ #endif
+ #endif
+ #  define LUA_INT_TYPE    LUA_INT_INT
+-#  define LUA_FLOAT_TYPE  LUA_FLOAT_FLOAT
+-//#  define LUA_FLOAT_TYPE  LUA_FLOAT_DOUBLE
++//#  define LUA_FLOAT_TYPE  LUA_FLOAT_FLOAT
++#  define LUA_FLOAT_TYPE  LUA_FLOAT_DOUBLE
+ 
+ /*
+ ** Configuration for Paths.

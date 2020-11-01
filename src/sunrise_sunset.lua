@@ -1,5 +1,4 @@
 require "math"
-posix2julian = require "posix2julian"
 
 --- Calculate sunrise and sunset for a certain date and plate on Earth
 -- See https://en.wikipedia.org/wiki/Sunrise_equation#Complete_calculation_on_Earth for
