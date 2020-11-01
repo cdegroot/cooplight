@@ -70,15 +70,21 @@ function ntp_callback(seconds, micros, server, info)
 
   -- if we have time to the lamp on, sleep
   if time_to_dusk_lamp_on > 0 then
-     sleep_until_lamp_on(time_to_dusk_lamp_on)
-  else
-     time_to_dusk_lamp_off = time_to_sunset + LAMP_OFF_AFTER_SUNSET
-     -- if we are in the lamp on time, switch it on
-     if time_to_dusk_lamp_off > 0 then
-        turn_lamp_on(time_to_dusk_lamp_off)
-     else
+     -- for precision, we don't sleep more than 90 minutes. I have no clue how reliable
+     -- the NodeMCU `tmr` is, this should help.
+     if time_to_dusk_lamp_on > 5400 then
         sleep_until_next_round()
+     else
+        sleep_until_lamp_on(time_to_dusk_lamp_on)
      end
+  else
+    time_to_dusk_lamp_off = time_to_sunset + LAMP_OFF_AFTER_SUNSET
+    -- if we are in the lamp on time, switch it on
+    if time_to_dusk_lamp_off > 0 then
+      turn_lamp_on(time_to_dusk_lamp_off)
+    else
+      sleep_until_next_round()
+    end
   end
   print("NTP callback complete, actions scheduled")
 end
@@ -100,4 +106,5 @@ function ntp_sync()
 end
 
 -- Start the above machinery
+gpios_off()
 ntp_sync()
