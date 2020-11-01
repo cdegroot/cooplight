@@ -1,0 +1,4 @@
+[submodule "deps/nodemcu-firmware"]
+	path = deps/nodemcu-firmware
+	url = https://github.com/nodemcu/nodemcu-firmware
+	branch = release
