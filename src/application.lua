@@ -1,7 +1,8 @@
 local posix2julian = require "posix2julian"
 local sunrise_sunset = require "sunrise_sunset"
+local log = require "syslog"
 
-print("Initializing CoopLight™ (v1.0)")
+log.info("Initializing CoopLight™ (v1.0)")
 
 LAMP_ON_BEFORE_SUNSET = 1800
 LAMP_OFF_AFTER_SUNSET = 3600
@@ -18,53 +19,53 @@ end
 
 -- Sleep this many seconds and then turn the lamp on
 function sleep_until_lamp_on(time_to_sleep)
-   print("Sleeping for", time_to_sleep, "until lamp can go on")
+   log.info("Sleeping for "..time_to_sleep.." until lamp can go on")
    if not tmr.create():alarm(time_to_sleep * 1000, tmr.ALARM_SINGLE, function()
                                 turn_lamp_on(LAMP_ON_BEFORE_SUNSET + LAMP_OFF_AFTER_SUNSET)
                             end)
    then
-      print("ERROR Could not create timer until lamp on, rebooting.")
+      log.error("ERROR Could not create timer until lamp on, rebooting.")
       node.restart()
    end
 end
 
 function turn_lamp_on(time_to_lamp_off)
-   print("Turning lamp on for", time_to_lamp_off, "seconds")
+   log.info("Turning lamp on for "..time_to_lamp_off.." seconds")
    gpios_on()
    if not tmr.create():alarm(time_to_lamp_off * 1000, tmr.ALARM_SINGLE, function()
-                                print("Lamp has been on enough, turning off")
+                                log.info("Lamp has been on enough, turning off")
                                 gpios_off()
                                 sleep_until_next_round()
                             end)
    then
-      print("ERROR Could not create timer until lamp off, rebooting.")
+      log.error("ERROR Could not create timer until lamp off, rebooting.")
       node.restart()
    end
 
 end
 
 function sleep_until_next_round()
-   print("Sleeping for an hour...")
+   log.info("Sleeping for an hour...")
    if not tmr.create():alarm(3600 * 1000, tmr.ALARM_SINGLE, function()
-                                print("Doing another round")
+                                log.info("Doing another round")
                                 ntp_sync()
                             end)
    then
-      print("ERROR Could not create timer until next round, rebooting.")
+      log.error("ERROR Could not create timer until next round, rebooting.")
       node.restart()
    end
 end
 
 function ntp_callback(seconds, micros, server, info)
   -- local n = rtctime.get()
-  print("Synchronized NTP with", server)
-  print("Current POSIX time is", seconds)
+  log.info("Synchronized NTP with "..server)
+  log.info("Current POSIX time is "..seconds)
   local jd = posix2julian(seconds)
-  print("Current Julian time is", jd)
+  log.info("Current Julian time is "..jd)
   local sunrise, noon, sunset = sunrise_sunset(LAT, LON, jd)
   local time_to_sunset = (sunset - jd) * 84600
   time_to_sunset = math.floor(time_to_sunset)
-  print("Sunset in:", time_to_sunset, "secs")
+  log.info("Sunset in: "..time_to_sunset.." secs")
 
   local time_to_dusk_lamp_on = time_to_sunset - LAMP_ON_BEFORE_SUNSET
 
@@ -86,11 +87,11 @@ function ntp_callback(seconds, micros, server, info)
       sleep_until_next_round()
     end
   end
-  print("NTP callback complete, actions scheduled")
+  log.info("NTP callback complete, actions scheduled")
 end
 
 function ntp_err_callback(error_code, error_msg)
-  print("NTP ERROR!", error_code, error_msg)
+  log.error("NTP ERROR: "..error_code..": "..error_msg)
   -- Not much we can do but restart the node. We try with a delay,
   -- but if that doesn't work we go for it right away
   if not tmr.create():alarm(5000, tmr.ALARM_SINGLE, function()
