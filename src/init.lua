@@ -24,8 +24,8 @@ wifi_got_ip_event = function(T)
   -- Note: Having an IP address does not mean there is internet access!
   -- Internet connectivity can be determined with net.dns.resolve().
   log.info("Wifi connection is ready! IP address is: "..T.IP)
-  log.info("Starting...")
-  startup()
+  log.info("Startup will resume in five seconds, in case of panic loop execute `file.remove(\"init.lua\")` on console")
+  tmr.create():alarm(5000, tmr.ALARM_SINGLE, startup)
 end
 
 wifi_disconnect_event = function(T)

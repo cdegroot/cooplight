@@ -9,7 +9,7 @@ local USER = 1
 local INFO = 6
 local ERROR = 3
 
-local MONTHS = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+local MONTHS = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 
 local sock = net.createUDPSocket()
 local pre_ip_buf = {}
