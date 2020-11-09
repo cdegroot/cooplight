@@ -103,7 +103,7 @@ function ntp_err_callback(error_code, error_msg)
 end
 
 function ntp_sync()
-   sntp.sync(nil, ntp_callback, ntp_err_callback, 0)
+   sntp.sync(nil, ntp_callback, ntp_err_callback, nil)
 end
 
 -- Start the above machinery
